@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works - Stock Price Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <div class="container how-it-works">
+        <div class="header-actions">
+            <h1><i class="fas fa-code"></i> How It Works</h1>
+            <a href="/" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Predictor
+            </a>
+        </div>
+
+        <div class="documentation-grid">
+            <div class="doc-section">
+                <h2>Machine Learning Model</h2>
+                <p>Our stock prediction model uses advanced machine learning techniques including:</p>
+                <ul>
+                    <li>Random Forest Regression</li>
+                    <li>Technical Indicators Analysis</li>
+                    <li>Historical Price Patterns</li>
+                </ul>
+                <pre><code class="language-python">
+# Core prediction model
+class StockPredictor:
+    def __init__(self):
+        self.model = RandomForestRegressor(
+            n_estimators=100,
+            random_state=42
+        )
+        
+    def prepare_features(self, prices):
+        # Calculate technical indicators
+        features = []
+        for i in range(len(prices) - 60):
+            window = prices[i:i+60]
+            feature = [
+                np.mean(window),
+                np.std(window),
+                calculate_rsi(window)[-1],
+                # More indicators...
+            ]
+            features.append(feature)
+        return np.array(features)
+                </code></pre>
+            </div>
+
+            <div class="doc-section">
+                <h2>Technical Analysis</h2>
+                <p>We incorporate multiple technical indicators:</p>
+                <pre><code class="language-python">
+def calculate_rsi(prices, period=14):
+    delta = pd.Series(prices).diff()
+    gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+    loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
+    rs = gain / loss
+    return 100 - (100 / (1 + rs))
+                </code></pre>
+            </div>
+
+            <div class="doc-section">
+                <h2>Data Processing</h2>
+                <p>Real-time data is fetched and processed using:</p>
+                <pre><code class="language-python">
+# Fetch stock data
+stock = yf.Ticker(symbol)
+hist = stock.history(period='1y')
+
+# Process data
+prices = hist['Close'].tolist()
+volumes = hist['Volume'].tolist()
+dates = hist.index.strftime('%Y-%m-%d').tolist()
+                </code></pre>
+            </div>
+
+            <div class="doc-section">
+                <h2>Visualization</h2>
+                <p>Interactive charts are created using Plotly:</p>
+                <pre><code class="language-javascript">
+function updateCharts(data) {
+    const priceTrace = {
+        x: data.dates,
+        y: data.prices,
+        type: 'scatter',
+        name: 'Price',
+        line: { color: '#2962ff' }
+    };
+
+    Plotly.newPlot('priceChart', [priceTrace], layout);
+}
+                </code></pre>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-javascript.min.js"></script>
+</body>
+</html> 

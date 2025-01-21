@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Stock Price Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-actions">
+            <h1><i class="fas fa-chart-line"></i> Advanced Stock Price Predictor</h1>
+            <a href="/how-it-works" class="how-it-works-btn">
+                <i class="fas fa-code"></i> How It Works
+            </a>
+        </div>
+        
+        <div class="quick-stats">
+            <div class="stat-card">
+                <i class="fas fa-dollar-sign"></i>
+                <h3>S&P 500</h3>
+                <p id="sp500Value">Loading...</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-chart-pie"></i>
+                <h3>Market Status</h3>
+                <p id="marketStatus">Loading...</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-clock"></i>
+                <h3>Last Updated</h3>
+                <p id="lastUpdated">Loading...</p>
+            </div>
+        </div>
+
+        <div class="search-section">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="stockSymbol" placeholder="Enter Stock Symbol (e.g., AAPL, MSFT, ^GSPC)">
+            </div>
+            <select id="timeframe">
+                <option value="6">6 Months</option>
+                <option value="3">3 Months</option>
+                <option value="1">1 Month</option>
+                <option value="12">1 Year</option>
+            </select>
+            <button id="analyzeBtn"><i class="fas fa-analytics"></i> Analyze</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Analyzing market data...</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="main-chart-section">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-line"></i> Price Analysis</h3>
+                        <div class="chart-controls">
+                            <button class="chart-control active" data-period="1M">1M</button>
+                            <button class="chart-control" data-period="3M">3M</button>
+                            <button class="chart-control" data-period="6M">6M</button>
+                            <button class="chart-control" data-period="1Y">1Y</button>
+                        </div>
+                    </div>
+                    <div id="priceChart" class="chart"></div>
+                </div>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h4>CURRENT PRICE</h4>
+                    <div class="price" id="currentPrice">-</div>
+                    <div class="change" id="priceChange">-</div>
+                </div>
+                <div class="metric-card prediction">
+                    <h4>PREDICTED PRICE</h4>
+                    <div class="price" id="predictedPrice">-</div>
+                    <div class="confidence" id="predictionConfidence">Confidence: -</div>
+                </div>
+                <div class="metric-card">
+                    <h4>RSI (14)</h4>
+                    <div class="price" id="rsiValue">-</div>
+                    <div class="rsi-status" id="rsiStatus">-</div>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3><i class="fas fa-info-circle"></i> Company Overview</h3>
+                    <div class="company-info">
+                        <div class="info-row">
+                            <span class="label">Sector</span>
+                            <span id="sector" class="value">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Industry</span>
+                            <span id="industry" class="value">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Market Cap</span>
+                            <span id="marketCap" class="value">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">P/E Ratio</span>
+                            <span id="peRatio" class="value">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <h3><i class="fas fa-wave-square"></i> RSI Analysis</h3>
+                    <div id="rsiChart" class="chart"></div>
+                </div>
+                <div class="chart-card">
+                    <h3><i class="fas fa-chart-bar"></i> Volume Analysis</h3>
+                    <div id="volumeChart" class="chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
