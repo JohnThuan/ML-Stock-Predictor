@@ -78,48 +78,174 @@ async function getPrediction() {
     }
 }
 
+function calculateMA(prices, period) {
+    const ma = [];
+    for (let i = 0; i < prices.length; i++) {
+        if (i < period - 1) {
+            ma.push(null);
+            continue;
+        }
+        let sum = 0;
+        for (let j = 0; j < period; j++) {
+            sum += prices[i - j];
+        }
+        ma.push(sum / period);
+    }
+    return ma;
+}
+
 function updateCharts(data) {
     console.log('Updating charts with:', data);
     
-    // Price Chart
+    // Calculate Moving Averages
+    const ma20 = calculateMA(data.prices, 20);
+    const ma50 = calculateMA(data.prices, 50);
+
+    // Price Chart with MAs and Prediction
+    const lastPrice = data.prices[data.prices.length - 1];
+    const predictedPrice = data.metrics.predicted_price;
+    const predictionColor = predictedPrice >= lastPrice ? '#4caf50' : '#f44336';
+
+    // Create prediction date
+    const lastDate = new Date(data.dates[data.dates.length - 1]);
+    const nextDate = new Date(lastDate);
+    nextDate.setDate(lastDate.getDate() + 1);
+    const predictionDate = nextDate.toISOString().split('T')[0];
+
     const priceTrace = {
         x: data.dates,
         y: data.prices,
         type: 'scatter',
         name: 'Price',
         line: { 
-            color: '#2962ff',
+            color: '#2196f3',
             width: 2
         }
     };
 
-    const layout = {
-        height: 400,
-        margin: { t: 20, r: 50, b: 40, l: 50 },
-        xaxis: { showgrid: true },
-        yaxis: { showgrid: true }
+    const ma20Trace = {
+        x: data.dates,
+        y: ma20,
+        type: 'scatter',
+        name: '20 MA',
+        line: {
+            color: '#4caf50',  // Green
+            width: 1.5
+        }
     };
 
-    Plotly.newPlot('priceChart', [priceTrace], layout);
+    const ma50Trace = {
+        x: data.dates,
+        y: ma50,
+        type: 'scatter',
+        name: '50 MA',
+        line: {
+            color: '#f44336',  // Red
+            width: 1.5
+        }
+    };
 
-    // RSI Chart
+    const predictionTrace = {
+        x: [data.dates[data.dates.length - 1], predictionDate],
+        y: [lastPrice, predictedPrice],
+        type: 'scatter',
+        name: 'Prediction',
+        line: {
+            color: predictionColor,
+            width: 2,
+            dash: 'dash'
+        }
+    };
+
+    const priceLayout = {
+        height: 400,
+        margin: { t: 20, r: 50, b: 40, l: 50 },
+        paper_bgcolor: 'white',
+        plot_bgcolor: 'white',
+        xaxis: {
+            showgrid: true,
+            gridcolor: '#e9ecef',
+            gridwidth: 1,
+            linecolor: '#e9ecef',
+            tickfont: { 
+                family: 'Montserrat',
+                color: '#2c3e50' 
+            }
+        },
+        yaxis: {
+            showgrid: true,
+            gridcolor: '#e9ecef',
+            gridwidth: 1,
+            linecolor: '#e9ecef',
+            tickfont: { 
+                family: 'Montserrat',
+                color: '#2c3e50' 
+            }
+        },
+        showlegend: true,
+        legend: {
+            font: { 
+                family: 'Montserrat',
+                color: '#2c3e50' 
+            }
+        },
+        annotations: [{
+            x: predictionDate,
+            y: predictedPrice,
+            text: `Predicted: $${predictedPrice.toFixed(2)}`,
+            showarrow: true,
+            arrowhead: 2,
+            arrowcolor: predictionColor,
+            ax: 40,
+            ay: -40,
+            font: { 
+                family: 'Montserrat',
+                color: predictionColor 
+            }
+        }]
+    };
+
+    console.log('Creating price chart with MAs and prediction');
+    Plotly.newPlot('priceChart', [priceTrace, ma20Trace, ma50Trace, predictionTrace], priceLayout);
+
+    // RSI Chart with Overbought/Oversold Lines
     if (data.rsi && Array.isArray(data.rsi)) {
-        console.log('Creating RSI chart with data:', data.rsi);
         const rsiTrace = {
             x: data.dates,
             y: data.rsi,
             type: 'scatter',
             name: 'RSI',
-            line: { color: '#673ab7' }
+            line: { 
+                color: '#5c6bc0',
+                width: 2
+            }
         };
 
         const rsiLayout = {
             height: 200,
             margin: { t: 20, r: 50, b: 40, l: 50 },
+            paper_bgcolor: 'white',
+            plot_bgcolor: 'white',
+            xaxis: {
+                showgrid: true,
+                gridcolor: '#e9ecef',
+                gridwidth: 1,
+                linecolor: '#e9ecef',
+                tickfont: { 
+                    family: 'Montserrat',
+                    color: '#2c3e50' 
+                }
+            },
             yaxis: {
                 range: [0, 100],
                 showgrid: true,
-                title: 'RSI'
+                gridcolor: '#e9ecef',
+                gridwidth: 1,
+                linecolor: '#e9ecef',
+                tickfont: { 
+                    family: 'Montserrat',
+                    color: '#2c3e50' 
+                }
             },
             shapes: [
                 {
@@ -129,7 +255,7 @@ function updateCharts(data) {
                     x0: data.dates[0],
                     x1: data.dates[data.dates.length - 1],
                     line: {
-                        color: 'red',
+                        color: '#f44336',
                         width: 1,
                         dash: 'dash'
                     }
@@ -141,7 +267,7 @@ function updateCharts(data) {
                     x0: data.dates[0],
                     x1: data.dates[data.dates.length - 1],
                     line: {
-                        color: 'green',
+                        color: '#4caf50',
                         width: 1,
                         dash: 'dash'
                     }
@@ -149,29 +275,56 @@ function updateCharts(data) {
             ]
         };
 
+        console.log('Creating RSI chart with indicators');
         Plotly.newPlot('rsiChart', [rsiTrace], rsiLayout);
-    } else {
-        console.error('RSI data missing or invalid:', data.rsi);
     }
 
-    // Volume Chart
+    // Volume Chart with Color-coded bars
     if (data.volume) {
+        const volumeColors = data.prices.map((price, i) => {
+            if (i === 0) return '#90caf9';
+            return price > data.prices[i-1] ? '#4caf50' : '#f44336';
+        });
+
         const volumeTrace = {
             x: data.dates,
             y: data.volume,
             type: 'bar',
             name: 'Volume',
-            marker: { color: '#90caf9' }
+            marker: { 
+                color: volumeColors,
+                opacity: 0.7
+            }
         };
 
         const volumeLayout = {
             height: 200,
             margin: { t: 20, r: 50, b: 40, l: 50 },
+            paper_bgcolor: 'white',
+            plot_bgcolor: 'white',
+            xaxis: {
+                showgrid: true,
+                gridcolor: '#e9ecef',
+                gridwidth: 1,
+                linecolor: '#e9ecef',
+                tickfont: { 
+                    family: 'Montserrat',
+                    color: '#2c3e50' 
+                }
+            },
             yaxis: {
-                title: 'Volume'
+                showgrid: true,
+                gridcolor: '#e9ecef',
+                gridwidth: 1,
+                linecolor: '#e9ecef',
+                tickfont: { 
+                    family: 'Montserrat',
+                    color: '#2c3e50' 
+                }
             }
         };
 
+        console.log('Creating volume chart with colored bars');
         Plotly.newPlot('volumeChart', [volumeTrace], volumeLayout);
     }
 }

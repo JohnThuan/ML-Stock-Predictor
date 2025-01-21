@@ -12,7 +12,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 body {
@@ -54,6 +54,8 @@ input, select {
     border-radius: 8px;
     font-size: 16px;
     transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
 }
 
 input:focus, select:focus {
@@ -69,7 +71,7 @@ button {
     padding: 12px 30px;
     border-radius: 8px;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 500;
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -114,6 +116,8 @@ button:hover {
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
 }
 
 .info-item span {
@@ -121,6 +125,8 @@ button:hover {
     font-weight: 600;
     color: var(--dark);
     margin-top: 5px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
 }
 
 /* Charts Section */
@@ -142,6 +148,7 @@ button:hover {
     margin-bottom: 15px;
     font-size: 18px;
     font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
 }
 
 /* Metrics Grid */
@@ -173,6 +180,8 @@ button:hover {
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
 }
 
 .price {
@@ -180,6 +189,8 @@ button:hover {
     font-weight: 700;
     color: var(--dark);
     margin: 10px 0;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
 }
 
 .change {
@@ -443,6 +454,8 @@ h3 i {
     align-items: center;
     gap: 8px;
     transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
 }
 
 .how-it-works-btn:hover, .back-btn:hover {
